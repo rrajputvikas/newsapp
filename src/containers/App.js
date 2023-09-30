@@ -8,7 +8,8 @@ class App extends Component{
         return(
             <div>
                 <NavBar />
-                <News />
+                {/* "Insert your API Key to run on your localhost" */}
+                <News apiKey="Your apiKey" category="science" pageSize={15} />
             </div>
         );
     }

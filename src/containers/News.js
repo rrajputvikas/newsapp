@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import NewsItem from "../components/NewsItem";
 import defaultImage from "../imageNotAvailable.png";
+import Spinner from "../components/loading";
 
 class News extends Component {
   constructor() {
@@ -13,48 +14,77 @@ class News extends Component {
     };
   }
 
-  apiKey = "Insert your API Key to run on your localhost";
-  async componentDidMount() {
-    const url =
-      `https://newsapi.org/v2/top-headlines?country=in&category=business&apiKey=${this.apiKey}&page=${this.state.page}&pageSize=15`;
-    const data = await fetch(url);
-    const parsedData = await data.json();
-    this.setState({ 
-      articles: parsedData.articles,
-      totalResults: parsedData.totalResults
-    });
-  }
+  async fetchData(page) {
+    try {
+      const url = `https://newsapi.org/v2/top-headlines?country=in&category=business&apiKey=${this.props.apiKey}&page=${page}&pageSize=${this.props.pageSize}`;
+      this.setState({ loading: true });
+      const response = await fetch(url);
 
-  prevClicked = async () => {
-    const url = `https://newsapi.org/v2/top-headlines?country=in&category=business&apiKey=${this.apiKey}&page=${this.state.page - 1}&pageSize=15`;
-    const data = await fetch(url);
-    const parsedData = await data.json();
+      if (!response.ok) {
+        throw new Error("Network response is not ok. Check your apiKey-(typo) or requesting server down");
+      }
 
-    this.setState({
-      articles: parsedData.articles,
-      page: this.state.page - 1
-    });
-  }
-
-  nextClicked = async  () => {
-    if(this.state.page <= Math.ceil(this.state.totalResults / 15)) {
-      const url = `https://newsapi.org/v2/top-headlines?country=in&category=business&apiKey=${this.apiKey}&page=${this.state.page + 1}&pageSize=15`;
-      const data = await fetch(url);
-      const parsedData = await data.json();
-      this.setState({
-        articles: parsedData.articles,
-        page: this.state.page + 1
-      })
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      throw error;
     }
   }
+
+  async componentDidMount() {
+    try {
+      const parsedData = await this.fetchData(this.state.page);
+      this.setState({
+        articles: parsedData.articles,
+        totalResults: parsedData.totalResults,
+        loading: false,
+      });
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  nextClicked = async () => {
+    if (
+      this.state.page <=
+      Math.ceil(this.state.totalResults / this.props.pageSize)
+    ) {
+      try {
+        const parsedData = await this.fetchData(this.state.page + 1);
+        console.log(parsedData);
+        this.setState({
+          articles: parsedData.articles,
+          page: this.state.page + 1,
+          loading: false,
+        });
+      } catch (error) {
+        throw error;
+      }
+    }
+  };
+
+  prevClicked = async () => {
+    try {
+      const parsedData = await this.fetchData(this.state.page - 1);
+      console.log(parsedData);
+      this.setState({
+        articles: parsedData.articles,
+        page: this.state.page - 1,
+        loading: false,
+      });
+    } catch (error) {
+      throw error;
+    }
+  };
 
   render() {
     return (
       <div>
         <div className="container my-3">
-          <h2 className="text-center">News Company - Top Headlines</h2>
+          <h1 className="text-center">News: Top Headlines</h1>
+          {this.state.loading && <Spinner />}
           <div className="row">
-            {this.state.articles.map((element, index) => {
+            {!this.state.loading && this.state.articles.map((element, index) => {
               return (
                 <div className="col-md-auto" key={index}>
                   <NewsItem
@@ -76,11 +106,24 @@ class News extends Component {
             })}
           </div>
         </div>
-        <div className="d-flex justify-content-end sticky-bottom">
-          <button disabled= {this.state.page<=1} type="button" onClick={this.prevClicked} className="btn btn-warning m-2">
+        <div className="d-flex justify-content-end fixed-bottom">
+          <button
+            disabled={this.state.page <= 1}
+            type="button"
+            onClick={this.prevClicked}
+            className="btn btn-warning m-2"
+          >
             &larr; Prev
           </button>
-          <button disabled={this.state.page >= Math.ceil(this.state.totalResults/15)} type="button" onClick={this.nextClicked} className="btn btn-warning m-2">
+          <button
+            disabled={
+              this.state.page >=
+              Math.ceil(this.state.totalResults / this.props.pageSize)
+            }
+            type="button"
+            onClick={this.nextClicked}
+            className="btn btn-warning m-2"
+          >
             Next &rarr;
           </button>
         </div>
