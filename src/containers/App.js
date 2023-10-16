@@ -1,15 +1,28 @@
 import React, {Component} from "react";
 import NavBar from "../components/NavBar";
-import News from './News'
+import News from './News';
 
 class App extends Component{
+
+    constructor() {
+        super();
+        this.state = {
+            country: 'in',
+            pageSize: 15,
+            category: 'general',
+        }
+    }
     
+    setChoice = (category) => {
+        this.setState({category: category});
+    }
+
     render() {
         return(
             <div>
-                <NavBar />
+                <NavBar setChoice={this.setChoice}/>
                 {/* "Insert your API Key to run on your localhost" */}
-                <News apiKey="Your apiKey" category="science" pageSize={15} />
+                <News apiKey="Insert your API Key to run on your localhost" category={this.state.category} pageSize={15} />
             </div>
         );
     }

@@ -1,5 +1,7 @@
 import React, { Component } from "react";
 
+const categories = ['General', 'Business', 'Entertainment', 'Health', 'Science', 'Sports', 'Technology']; 
+
 class Navbar extends Component {
   render() {
     return (
@@ -24,41 +26,15 @@ class Navbar extends Component {
           </button>
           <div className="collapse navbar-collapse justify-content-end" id="navbarSupportedContent">
             <ul className="navbar-nav">
-              <li className="nav-item">
-                <a className="nav-link" href="/">
-                  Business
-                </a>
-              </li>
-              <li className="nav-item">
-                <a className="nav-link" href="/">
-                  Entertainment
-                </a>
-              </li>
-              <li className="nav-item">
-                <a className="nav-link" href="/">
-                 General
-                </a>
-              </li>
-              <li className="nav-item">
-                <a className="nav-link" href="/">
-                  Health
-                </a>
-              </li>
-              <li className="nav-item">
-                <a className="nav-link" href="/">
-                  Science
-                </a>
-              </li>
-              <li className="nav-item">
-                <a className="nav-link" href="/">
-                  Sports
-                </a>
-              </li>
-              <li className="nav-item">
-                <a className="nav-link" href="/">
-                  Technology
-                </a>
-              </li>
+              {
+                categories.map((category) => {
+                  return (
+                    <li key={category} className="nav-link" onClick={() => this.props.setChoice(category.toLowerCase())} role='button'>
+                      {category}
+                    </li>
+                  )
+                })
+              }
             </ul>
           </div>
           <div className="collapse navbar-collapse justify-content-end" id="navbarSupportedContent">

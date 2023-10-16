@@ -2,8 +2,21 @@ import React, { Component } from "react";
 import NewsItem from "../components/NewsItem";
 import defaultImage from "../imageNotAvailable.png";
 import Spinner from "../components/loading";
+import propTypes from 'prop-types';
 
 class News extends Component {
+  static defaultProps = {
+    country: 'in',
+    pageSize: 15,
+    category: 'general',
+  }
+  
+  static propTypes = {
+    country: propTypes.string,
+    pageSize: propTypes.number,
+    category: propTypes.string,
+  }
+
   constructor() {
     super();
     this.state = {
@@ -16,7 +29,7 @@ class News extends Component {
 
   async fetchData(page) {
     try {
-      const url = `https://newsapi.org/v2/top-headlines?country=in&category=business&apiKey=${this.props.apiKey}&page=${page}&pageSize=${this.props.pageSize}`;
+      const url = `https://newsapi.org/v2/top-headlines?country=${this.props.country}&category=${this.props.category}&apiKey=${this.props.apiKey}&page=${page}&pageSize=${this.props.pageSize}`;
       this.setState({ loading: true });
       const response = await fetch(url);
 
@@ -41,6 +54,24 @@ class News extends Component {
       });
     } catch (error) {
       throw error;
+    }
+  }
+
+  async componentDidUpdate(prevProps) {
+    if(prevProps.category !== this.props.category) {
+      try {
+        const parsedData = await this.fetchData(1);
+        console.log(parsedData);
+        this.setState({
+          articles: parsedData.articles,
+          page: 1,
+          totalResults: parsedData.totalResults,
+          loading: false,
+        });
+      }
+      catch (error) {
+        throw error;
+      }
     }
   }
 
@@ -81,9 +112,9 @@ class News extends Component {
     return (
       <div>
         <div className="container my-3">
-          <h1 className="text-center">News: Top Headlines</h1>
+          <h1 className="text-center">{this.props.category.toUpperCase().charAt(0)+this.props.category.slice(1)}: Top Headlines</h1>
           {this.state.loading && <Spinner />}
-          <div className="row">
+          <div className="row justify-content-center">
             {!this.state.loading && this.state.articles.map((element, index) => {
               return (
                 <div className="col-md-auto" key={index}>
