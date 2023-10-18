@@ -131,6 +131,8 @@ class News extends Component {
                         : element.urlToImage
                     }
                     newsUrl={element.url}
+                    author = {element.author ? element.author.slice(0, 14) : 'Not Available'}
+                    date={element.publishedAt.slice(0,10).split('-')}
                   ></NewsItem>
                 </div>
               );

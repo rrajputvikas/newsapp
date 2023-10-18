@@ -22,7 +22,7 @@ class App extends Component{
             <div>
                 <NavBar setChoice={this.setChoice}/>
                 {/* "Insert your API Key to run on your localhost" */}
-                <News apiKey="Insert your API Key to run on your localhost" category={this.state.category} pageSize={15} />
+                <News apiKey="API Key Here.." category={this.state.category} pageSize={15} />
             </div>
         );
     }

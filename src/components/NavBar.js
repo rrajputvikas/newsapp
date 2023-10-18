@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 
-const categories = ['General', 'Business', 'Entertainment', 'Health', 'Science', 'Sports', 'Technology']; 
+const categories = ['Business', 'Entertainment', 'Health', 'Science', 'Sports', 'Technology']; 
 
 class Navbar extends Component {
   render() {
@@ -10,9 +10,11 @@ class Navbar extends Component {
         data-bs-theme="dark"
       >
         <div className="container-fluid justify-content-between">
-          <a className="navbar-brand" href="/">
-            News Company
-          </a>
+          <ul className="navbar-nav">
+            <li className="navbar-brand" onClick={() => this.props.setChoice('general')} role='button'>
+              News Company
+            </li>
+          </ul>
           <button
             className="navbar-toggler"
             type="button"
