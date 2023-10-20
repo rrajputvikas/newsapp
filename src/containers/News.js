@@ -32,28 +32,31 @@ class News extends Component {
     };
   }
 
-  async fetchData(page) {
+  async fetchData(page, progress=true) {
     try {
       const url = `https://newsapi.org/v2/top-headlines?country=${this.props.country}&category=${this.props.category}&apiKey=${this.props.apiKey}&page=${page}&pageSize=${this.props.pageSize}`;
       this.setState({ loading: true });
+      progress && this.props.setProgress(15);
       const response = await fetch(url);
-
+      
       if (!response.ok) {
         const errData = await response.json();
         throw errData.message;
       }
-
+      
       const data = await response.json();
+      progress && this.props.setProgress(70);
       return data;
     } catch (error) {
       console.error(error);
       throw error;
     }
   }
-
+  
   async componentDidMount() {
     try {
       const parsedData = await this.fetchData(this.state.page);
+      this.props.setProgress(100);
       this.setState({
         articles: parsedData.articles,
         totalResults: parsedData.totalResults,
@@ -63,7 +66,7 @@ class News extends Component {
       throw error;
     }
   }
-
+  
   async componentDidUpdate(prevProps) {
     if (prevProps.category !== this.props.category) {
       window.scrollTo(0,0); 
@@ -76,26 +79,27 @@ class News extends Component {
           totalResults: parsedData.totalResults,
           loading: false,
         });
+        this.props.setProgress(100);
         document.title = `${this.capitalizeFirstLetter(
           this.props.category
-        )} News: Code Company`;
-      } catch (error) {
-        throw error;
+          )} News: Code Company`;
+        } catch (error) {
+          throw error;
+        }
       }
     }
-  }
-
-  fetchMoreData = async () => {
-    this.setState({
-      page: this.state.page + 1,
-    });
-    const data = await this.fetchData(this.state.page + 1);
-    this.setState({
-      articles: this.state.articles.concat(data.articles),
-      loading: false,
-    });
-  };
-
+    
+    fetchMoreData = async () => {
+      this.setState({
+        page: this.state.page + 1,
+      });
+      const data = await this.fetchData(this.state.page + 1, false);
+      this.setState({
+        articles: this.state.articles.concat(data.articles),
+        loading: false,
+      });
+    };
+    
   render() {
     return (
       <div>
