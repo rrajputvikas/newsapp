@@ -94,6 +94,13 @@ class News extends Component {
         page: this.state.page + 1,
       });
       const data = await this.fetchData(this.state.page + 1, false);
+      // Empty articles encounter
+      if(data.articles.length < 1) {
+        this.setState({
+          totalResults: this.state.articles.length,
+        })
+      }
+      
       this.setState({
         articles: this.state.articles.concat(data.articles),
         loading: false,
